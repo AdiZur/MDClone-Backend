@@ -4,15 +4,14 @@ const userService = require('../user/user.service')
 const logger = require('../../services/logger.service')
 const cryptr = new Cryptr(process.env.SECRET1 || 'Secret-Puk-1234')
 
-async function login(username, password) {
-    logger.debug(`auth.service - login with username: ${username}`)
-
-    const user = await userService.getByUsername(username)
-    if (!user) return Promise.reject('Invalid username or password')
+async function login(email, password) {
+    logger.debug(`auth.service - login with Email: ${email}`)
+    const user = await userService.getByUserEmail(email)
+    console.log('user', user)
+    if (!user) return Promise.reject('Invalid email or password')
     // TODO: un-comment for real login
-    // const match = await bcrypt.compare(password, user.password)
-    // if (!match) return Promise.reject('Invalid username or password')
-
+    const match = await bcrypt.compare(password, user.password)
+    if (!match) return Promise.reject('Invalid username or password')
     delete user.password
     user._id = user._id.toString()
     return user
@@ -23,20 +22,16 @@ async function login(username, password) {
 //     await signup('mumu', '123', 'Mumu Maha')
 // })()
 
-
-async function register({ username, password, fullname, imgUrl }) {
+async function register({ name, email, password }) {
     const saltRounds = 10
 
-    logger.debug(`auth.service - signup with username: ${username}, fullname: ${fullname}`)
-    if (!username || !password || !fullname) return Promise.reject('Missing required signup information')
-
-    const userExist = await userService.getByUsername(username)
-    if (userExist) return Promise.reject('Username already taken')
-
+    logger.debug(`auth.service - register with name: ${name}`)
+    if (!name || !email || !password) return Promise.reject('Missing required register information')
+    const userExist = await userService.getByUserEmail(email)
+    if (userExist) return Promise.reject('Email is already in use')
     const hash = await bcrypt.hash(password, saltRounds)
-    return userService.add({ username, password: hash, fullname, imgUrl })
+    return userService.add({ name, password: hash, email, imgUrl: 'TO FILL-ASK AMIT' })
 }
-
 
 function getLoginToken(user) {
     return cryptr.encrypt(JSON.stringify(user))

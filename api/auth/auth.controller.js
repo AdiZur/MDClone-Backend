@@ -3,14 +3,15 @@ const logger = require('../../services/logger.service')
 
 async function login(req, res) {
     console.log(req)
-    const { username, password } = req.body
+    const { email, password } = req.body
     try {
-        const user = await authService.login(username, password)
+        const user = await authService.login(email, password)
         const loginToken = authService.getLoginToken(user)
         logger.info('User login: ', user)
         res.cookie('loginToken', loginToken)
         res.json(user)
     } catch (err) {
+        console.log('err', err)
         logger.error('Failed to Login ' + err)
         res.status(401).send({ err: 'Failed to Login' })
     }
@@ -19,18 +20,17 @@ async function login(req, res) {
 async function register(req, res) {
     try {
         const credentials = req.body
-        // Never log passwords
-        // logger.debug(credentials)
-        const account = await authService.signup(credentials)
+        const account = await authService.register(credentials)
+        console.log('account', account)
         logger.debug(`auth.route - new account created: ` + JSON.stringify(account))
-        const user = await authService.login(credentials.username, credentials.password)
-        logger.info('User signup:', user)
+        const user = await authService.login(credentials.email, credentials.password)
+        logger.info('User register:', user)
         const loginToken = authService.getLoginToken(user)
         res.cookie('loginToken', loginToken)
         res.json(user)
     } catch (err) {
-        logger.error('Failed to signup ' + err)
-        res.status(500).send({ err: 'Failed to signup' })
+        logger.error('Failed to register ' + err)
+        res.status(500).send({ err: 'Failed to register' })
     }
 }
 

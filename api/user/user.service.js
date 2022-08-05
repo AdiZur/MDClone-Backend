@@ -7,6 +7,7 @@ module.exports = {
     query,
     getById,
     getByUsername,
+    getByUserEmail,
     remove,
     update,
     add
@@ -53,6 +54,18 @@ async function getByUsername(username) {
     }
 }
 
+async function getByUserEmail(email) {
+    try {
+        console.log('userEmail', email)
+        const collection = await dbService.getCollection('user')
+        const user = await collection.findOne({ email })
+        return user
+    } catch (err) {
+        logger.error(`while finding userEmail ${email}`, err)
+        throw err
+    }
+}
+
 async function remove(userId) {
     try {
         const collection = await dbService.getCollection('user')
@@ -82,17 +95,9 @@ async function update(user) {
 
 async function add(user) {
     try {
-        // peek only updatable fields!
-        const userToAdd = {
-            username: user.username,
-            password: user.password,
-            fullname: user.fullname,
-            imgUrl: user.imgUrl,
-            score: 100
-        }
         const collection = await dbService.getCollection('user')
-        await collection.insertOne(userToAdd)
-        return userToAdd
+        await collection.insertOne(user)
+        return user
     } catch (err) {
         logger.error('cannot insert user', err)
         throw err
