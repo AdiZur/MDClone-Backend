@@ -7,7 +7,6 @@ const cryptr = new Cryptr(process.env.SECRET1 || 'Secret-Puk-1234')
 async function login(email, password) {
     logger.debug(`auth.service - login with Email: ${email}`)
     const user = await userService.getByUserEmail(email)
-    console.log('user', user)
     if (!user) return Promise.reject('Invalid email or password')
     // TODO: un-comment for real login
     const match = await bcrypt.compare(password, user.password)
@@ -30,7 +29,7 @@ async function register({ name, email, password }) {
     const userExist = await userService.getByUserEmail(email)
     if (userExist) return Promise.reject('Email is already in use')
     const hash = await bcrypt.hash(password, saltRounds)
-    return userService.add({ name, password: hash, email, imgUrl: 'TO FILL-ASK AMIT' })
+    return userService.add({ name, password: hash, email, imgUrl: "https://xsgames.co/randomusers/assets/avatars/male/68.jpg" })
 }
 
 function getLoginToken(user) {

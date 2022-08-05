@@ -56,7 +56,6 @@ async function getByUsername(username) {
 
 async function getByUserEmail(email) {
     try {
-        console.log('userEmail', email)
         const collection = await dbService.getCollection('user')
         const user = await collection.findOne({ email })
         return user

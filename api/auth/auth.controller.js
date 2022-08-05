@@ -2,7 +2,6 @@ const authService = require('./auth.service')
 const logger = require('../../services/logger.service')
 
 async function login(req, res) {
-    console.log(req)
     const { email, password } = req.body
     try {
         const user = await authService.login(email, password)
@@ -11,7 +10,6 @@ async function login(req, res) {
         res.cookie('loginToken', loginToken)
         res.json(user)
     } catch (err) {
-        console.log('err', err)
         logger.error('Failed to Login ' + err)
         res.status(401).send({ err: 'Failed to Login' })
     }
@@ -21,7 +19,6 @@ async function register(req, res) {
     try {
         const credentials = req.body
         const account = await authService.register(credentials)
-        console.log('account', account)
         logger.debug(`auth.route - new account created: ` + JSON.stringify(account))
         const user = await authService.login(credentials.email, credentials.password)
         logger.info('User register:', user)
