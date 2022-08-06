@@ -1,6 +1,7 @@
 
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
+const utilService = require('../../services/util.service')
 const { ObjectId } = require('mongodb')
 
 module.exports = {
@@ -94,9 +95,15 @@ async function update(user) {
 
 async function add(user) {
     try {
+        const userToAdd = {
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            imgUrl: "https://xsgames.co/randomusers/assets/avatars/male/" + utilService.getRandomInt(1, 100) + ".jpg",
+        }
         const collection = await dbService.getCollection('user')
-        await collection.insertOne(user)
-        return user
+        await collection.insertOne(userToAdd)
+        return userToAdd
     } catch (err) {
         logger.error('cannot insert user', err)
         throw err
