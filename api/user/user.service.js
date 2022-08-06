@@ -6,11 +6,11 @@ const { ObjectId } = require('mongodb')
 
 module.exports = {
     query,
-    getById,
-    getByUsername,
+    // getById,
+    // getByUsername,
     getByUserEmail,
-    remove,
-    update,
+    // remove,
+    // update,
     add
 }
 
@@ -33,27 +33,27 @@ async function query(filterBy = {}) {
     }
 }
 
-async function getById(userId) {
-    try {
-        const collection = await dbService.getCollection('user')
-        const user = await collection.findOne({ _id: ObjectId(userId) })
-        delete user.password
-        return user
-    } catch (err) {
-        logger.error(`while finding user ${userId}`, err)
-        throw err
-    }
-}
-async function getByUsername(username) {
-    try {
-        const collection = await dbService.getCollection('user')
-        const user = await collection.findOne({ username })
-        return user
-    } catch (err) {
-        logger.error(`while finding user ${username}`, err)
-        throw err
-    }
-}
+// async function getById(userId) {
+//     try {
+//         const collection = await dbService.getCollection('user')
+//         const user = await collection.findOne({ _id: ObjectId(userId) })
+//         delete user.password
+//         return user
+//     } catch (err) {
+//         logger.error(`while finding user ${userId}`, err)
+//         throw err
+//     }
+// }
+// async function getByUsername(username) {
+//     try {
+//         const collection = await dbService.getCollection('user')
+//         const user = await collection.findOne({ username })
+//         return user
+//     } catch (err) {
+//         logger.error(`while finding user ${username}`, err)
+//         throw err
+//     }
+// }
 
 async function getByUserEmail(email) {
     try {
@@ -66,40 +66,38 @@ async function getByUserEmail(email) {
     }
 }
 
-async function remove(userId) {
-    try {
-        const collection = await dbService.getCollection('user')
-        await collection.deleteOne({ '_id': ObjectId(userId) })
-    } catch (err) {
-        logger.error(`cannot remove user ${userId}`, err)
-        throw err
-    }
-}
+// async function remove(userId) {
+//     try {
+//         const collection = await dbService.getCollection('user')
+//         await collection.deleteOne({ '_id': ObjectId(userId) })
+//     } catch (err) {
+//         logger.error(`cannot remove user ${userId}`, err)
+//         throw err
+//     }
+// }
 
-async function update(user) {
-    try {
-        // peek only updatable properties
-        const userToSave = {
-            _id: ObjectId(user._id), // needed for the returnd obj
-            fullname: user.fullname,
-            score: user.score,
-        }
-        const collection = await dbService.getCollection('user')
-        await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
-        return userToSave
-    } catch (err) {
-        logger.error(`cannot update user ${user._id}`, err)
-        throw err
-    }
-}
+// async function update(user) {
+//     try {
+//         const userToSave = {
+//             _id: ObjectId(user._id), // needed for the returnd obj
+//             name: user.name,
+//         }
+//         const collection = await dbService.getCollection('user')
+//         await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
+//         return userToSave
+//     } catch (err) {
+//         logger.error(`cannot update user ${user._id}`, err)
+//         throw err
+//     }
+// }
 
 async function add(user) {
     try {
         const userToAdd = {
-            name: user.name,
+            name: utilService.capitalizeWords(user.name),
             email: user.email,
             password: user.password,
-            imgUrl: "https://xsgames.co/randomusers/assets/avatars/male/" + utilService.getRandomInt(1, 100) + ".jpg",
+            imgUrl: "https://xsgames.co/randomusers/assets/avatars/" + utilService.getRandomGender() + "/" + utilService.getRandomInt(0, 79) + ".jpg",
         }
         const collection = await dbService.getCollection('user')
         await collection.insertOne(userToAdd)
