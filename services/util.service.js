@@ -9,6 +9,7 @@ function capitalizeWords(string) {
   let regex = /(?:^|\s)\S/g
   return string.replace(regex, function (x) { return x.toUpperCase() });
 }
+
 function getRandomGender() {
   return (Math.random() >= 0.5) ? 'female' : 'male';
 }
