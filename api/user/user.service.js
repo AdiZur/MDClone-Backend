@@ -2,26 +2,38 @@
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
 const utilService = require('../../services/util.service')
+const ObjectId = require('mongodb').ObjectId
 
 module.exports = {
     query,
     getByUserEmail,
-    add
+    add,
+    getById
 }
 
-async function query(filterBy = {}) {
-    // const criteria = _buildCriteria(filterBy)
+async function query() {
     try {
         const collection = await dbService.getCollection('user')
         var users = await collection.find({}).toArray()
         users = users.map(user => {
             delete user.password
-            // user.createdAt = ObjectId(user._id).getTimestamp()
             return user
         })
         return users
     } catch (err) {
         logger.error('cannot find users', err)
+        throw err
+    }
+}
+
+async function getById(userId) {
+    try {
+        const collection = await dbService.getCollection('user')
+        const user = await collection.findOne({ _id: ObjectId(userId) })
+        delete user.password
+        return user
+    } catch (err) {
+        logger.error(`while finding user ${userId}`, err)
         throw err
     }
 }
@@ -53,26 +65,3 @@ async function add(user) {
         throw err
     }
 }
-
-// function _buildCriteria(filterBy) {
-//     const criteria = {}
-//     if (filterBy.txt) {
-//         const txtCriteria = { $regex: filterBy.txt, $options: 'i' }
-//         criteria.$or = [
-//             {
-//                 username: txtCriteria
-//             },
-//             {
-//                 fullname: txtCriteria
-//             }
-//         ]
-//     }
-//     if (filterBy.minBalance) {
-//         criteria.score = { $gte: filterBy.minBalance }
-//     }
-//     return criteria
-// }
-
-
-
-
