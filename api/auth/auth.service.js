@@ -41,7 +41,6 @@ function validateToken(loginToken) {
     return null
 }
 
-
 module.exports = {
     register,
     login,
